@@ -1,0 +1,46 @@
+{
+  "name": "scraping-penguin-dashboard-backend",
+  "version": "1.0.0",
+  "engines": {
+    "node": "16.x"
+  },
+  "scripts": {
+    "start": "node ./server.js",
+    "dev": "nodemon ./server.js --ignore public/",
+    "production": "NODE_ENV=production",
+    "setup": "node ./setup/setup.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "axios-retry": "^4.0.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.12",
+    "connect-mongo": "^4.4.0",
+    "csv-parser": "^3.0.0",
+    "dotenv": "4.0.0",
+    "es6-promisify": "5.0.0",
+    "express": "^4.18.2",
+    "express-session": "^1.17.1",
+    "glob": "7.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "modern-async": "^1.1.4",
+    "mongoose": "^5.9.10",
+    "mongoose-autopopulate": "^0.14.0",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.24.1",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "description": "Scraping penguin dashboard",
+  "main": "app.js",
+  "keywords": [],
+  "author": "Scraping Penguins",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AoXDev/dashboard-backend-template.git"
+  }
+}
