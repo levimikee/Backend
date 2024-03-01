@@ -41,7 +41,7 @@ async function createAdmin() {
     const passwordHash = newAdmin.generateHash("123456");
 
     await new Admin({
-      email: "levi2",,
+      email: "levi2",
       password: newAdmin.generateHash("441zweqpi0oo91ss"),
       name: "admin",
       surname: "levi2",
