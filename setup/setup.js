@@ -41,11 +41,27 @@ async function createAdmin() {
     const passwordHash = newAdmin.generateHash("123456");
 
     await new Admin({
-      email: "admin@demo.com",
-      password: passwordHash,
+      email: "levi2",,
+      password: newAdmin.generateHash("441zweqpi0oo91ss"),
       name: "admin",
-      surname: "demo",
+      surname: "levi2",
     }).save();
+
+    await new Admin({
+      email: "levi1",
+      password: newAdmin.generateHash("441zweqpi0oo91ss"),
+      name: "admin",
+      surname: "levi1",
+    }).save();
+
+    await new Admin({
+      email: "levi3",
+      password: newAdmin.generateHash("441zweqpi0oo91ss"),
+      name: "admin",
+      surname: "levi3",
+    }).save();
+
+
     console.log("👍👍👍👍👍👍👍👍 Admin created : Done!");
     process.exit();
   } catch (e) {
