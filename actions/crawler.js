@@ -261,16 +261,18 @@ class Crawler {
 
             const cardList = $('.card');
 
+            function pushPhone(phoneNumbers){
+                phoneNumbers.each((index, element) => {
+                    const phoneNumber = $(element).text().trim();
+                    if (phoneNumber) cardPhoneNumbers.push(phoneNumber);
+                });
+            }
+
             for (let index = 0; index < cardList.length; index++) {
                 const card = cardList.eq(index);
                 const nameGiven = card.find('.name-given');
 
                 const phoneNumbers = $(card).find('.phone')
-
-                phoneNumbers.each((index, element) => {
-                    const phoneNumber = $(element).text().trim();
-                    if(phoneNumber) cardPhoneNumbers.push(phoneNumber);
-                });
 
                 if (nameGiven.length > 0) {
                     const cardFullName = nameGiven.text().trim();
@@ -284,6 +286,7 @@ class Crawler {
                     ) {
                         isMatchfound = true;
                         profileURL = card.find('[title*="View full"]').attr('href');
+                        pushPhone(phoneNumbers)
                         return { profileURL: profileURL, isMatchfound: isMatchfound, cardPhoneNumbers };
                     }
                     else if (
@@ -294,6 +297,7 @@ class Crawler {
                     ) {
                         isMatchfound = true;
                         profileURL = card.find('[title*="View full"]').attr('href');
+                        pushPhone(phoneNumbers)
                         return { profileURL: profileURL, isMatchfound: isMatchfound, cardPhoneNumbers };
                     }
                     else if (
@@ -309,6 +313,7 @@ class Crawler {
                     ) {
                         isMatchfound = true;
                         profileURL = card.find('[title*="View full"]').attr('href');
+                        pushPhone(phoneNumbers)
                         return { profileURL: profileURL, isMatchfound: isMatchfound, cardPhoneNumbers };
                     }
                 }
