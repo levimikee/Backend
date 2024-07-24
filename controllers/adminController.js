@@ -194,7 +194,6 @@ exports.update = async (req, res) => {
 
     if (email) {
       const existingAdmin = await Admin.findOne({ email: email });
-
       if (existingAdmin._id != req.params.id)
         return res
           .status(400)
@@ -203,7 +202,9 @@ exports.update = async (req, res) => {
 
     let updates = {
       role: req.body.role,
-      email: req.body.email,
+      name: req.body.name,
+      surname: req.body.surname,
+      email: req.body.email
     };
 
     // Find document by id and updates with the required fields
@@ -233,7 +234,7 @@ exports.update = async (req, res) => {
       },
       message: "we update this document by this id: " + req.params.id,
     });
-  } catch {
+  } catch(e) {
     // Server Error
     return res.status(500).json({
       success: false,

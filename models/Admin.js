@@ -36,6 +36,10 @@ const adminSchema = new Schema({
   isLoggedIn: {
     type: Boolean,
   },
+  isRootUser: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 // generating a hash

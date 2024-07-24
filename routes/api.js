@@ -64,6 +64,7 @@ router.route("/uploadfile").post(upload.single('file'), catchErrors(fileControll
 
 //_____________________________________ API to check csv document processing status ___________________________
 router.route("/documentstatus/:id").get(catchErrors(fileController.fileApi.checkStatus));
+router.route("/cancelprocessing/:id").get(catchErrors(fileController.fileApi.cancelProcessing));
 router.route("/documents/").get(catchErrors(fileController.fileApi.getAllCsvList));
 
 

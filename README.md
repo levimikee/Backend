@@ -12,6 +12,7 @@ password : admin123`
 3) open  .variables.env and paste your MongoDB url here :  DATABASE=your-mongodb-url
 4) npm install
 5) npm setup
+6) npm start (dev mode)
 
 ```
 

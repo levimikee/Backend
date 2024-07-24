@@ -8,7 +8,7 @@ const processCSVSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['processing', 'completed', 'failed'],
+        enum: ['processing', 'completed', 'failed', 'canceled'],
         default: 'processing',
     },
     totalRows: {

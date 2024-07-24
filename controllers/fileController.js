@@ -70,6 +70,28 @@ const fileApi = {
             await webCrawler.resetRequestCount()
         }
     },
+    cancelProcessing: async (req, res) => {
+        try {
+            const document = await ProcessCSV.findById(req.params.id);
+
+            if (!document) {
+                return res.status(404).json({ error: 'Document not found' });
+            }
+
+            // Document found, check status
+            if (document.status === 'completed') {
+                return res.status(400).json({ error: 'Document has already been processed' });
+            }
+
+            // Update the document status to 'cancelled'
+            await ProcessCSV.findByIdAndUpdate(req.params.id, { status: 'cancelled' });
+
+            res.json({ success: true });
+        } catch (error) {
+            console.error("Error cancelling process", error)
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
     checkStatus: async (req, res) => {
         try {
             const document = await ProcessCSV.findById(req.params.id);
@@ -97,6 +119,22 @@ const fileApi = {
 };
 
 /**
+ * Function to check if processing has been cancelled
+ * @param {string} documentId
+ * @returns {boolean}
+ * */
+const isProcessingCancelled = async (documentId) => {
+    try {
+        const document = await ProcessCSV.findById(documentId);
+        console.log('stats', document.status);
+        return document.status === 'cancelled';
+    } catch (error) {
+        console.error('Error checking if processing is cancelled:', error);
+        return true;
+    }
+}
+
+/**
  * Main function loops through rows, collect JSON updates to be made data and passes whole JSON updates data to save function
  * @param {Array} rows 
  * @param {Array} fileContent 
@@ -112,8 +150,12 @@ const crawlAndSave = async (rows, fileContent, documentId) => {
             let rowsProcessed = 0
             const startTime = Date.now();
             await mapLimit(rows, async (row, index) => {
-                if (index !== 0) {
-                    const updateContext = await crawlData(row)
+                // check if this process is cancelled
+                if (await isProcessingCancelled(documentId)) {
+                    console.log('Document processing cancelled');
+                    return
+                } else if (index !== 0) {
+                    const updateContext = await crawlData(row, documentId)
                     sharedData[index] = updateContext
                     rowsProcessed++
                     const rowUpdateInfo = {
@@ -126,6 +168,10 @@ const crawlAndSave = async (rows, fileContent, documentId) => {
                 }
 
             }, maximumParallelLoops)
+            if (await isProcessingCancelled(documentId)) {
+                console.log('Document processing cancelled');
+                return
+            }
 
             // Lets save the context
             for (const key in sharedData) {
@@ -148,7 +194,7 @@ const crawlAndSave = async (rows, fileContent, documentId) => {
  * @param {object} rowData 
  * @returns {object}
  */
-const crawlData = async (rowData) => {
+const crawlData = async (rowData, documentId) => {
     try {
 
         // Strcture data we need for proceesing
@@ -158,6 +204,10 @@ const crawlData = async (rowData) => {
 
         const temporaryownerOneLastName = ownerOneLastName
         if (/llc/i.test(temporaryownerOneLastName)) {
+            if (await isProcessingCancelled(documentId)) {
+                console.log('Document processing cancelled');
+                return
+            }
             const { firstName, lastName, fullName, id } = await webCrawler.getNameByLLC(ownerOneLastName);
             ownerOneName = `${firstName} ${lastName}`;
             ownerOneFirstName = firstName;
@@ -171,6 +221,10 @@ const crawlData = async (rowData) => {
             }
 
             if (id) {
+                if (await isProcessingCancelled(documentId)) {
+                    console.log('Document processing cancelled');
+                    return
+                }
                 const { agentMailingAddress, agentPropertyAddress } = await webCrawler.getLLCAgentAddressByID(id)
                 mailingAddress = agentMailingAddress.formattedMailingaddress
                 mailingCity = agentMailingAddress.formattedMailingCity
@@ -184,6 +238,10 @@ const crawlData = async (rowData) => {
 
         const fundDetectionStrings = (process.env.FUND_DETECTION_STRINGS || 'fund,funds,family').split(',');
         if (fundDetectionStrings.some(str => new RegExp(str, 'i').test(temporaryownerOneLastName))) {
+            if (await isProcessingCancelled(documentId)) {
+                console.log('Document processing cancelled');
+                return
+            }
             const { firstName, lastName } = await webCrawler.askChatGPT(temporaryownerOneLastName);
             ownerOneName = `${firstName} ${lastName}`;
             ownerOneFirstName = firstName;
@@ -193,7 +251,10 @@ const crawlData = async (rowData) => {
 
         // First lets check my mailing address to see if we find both owners
         console.info(`\n \n ---- Searching for ROW: ${rowData.index} Mailing address:  ${mailingAddress} for user 1: ${ownerOneName}, user 2: ${ownerTwoName}`)
-
+        if (await isProcessingCancelled(documentId)) {
+            console.log('Document processing cancelled');
+            return
+        }
         const { finalUpdates, caseOneMatchFound } = await crawlByAddress(mailingAddress, mailingCity, mailingState, ownerDetails)
         if (caseOneMatchFound) {
             return finalUpdates
@@ -202,7 +263,10 @@ const crawlData = async (rowData) => {
 
         // First condition did not satisfy, Lets check for second, Search by owner one name
         console.info(`\n \n -------- Searching by owner one name:  ${ownerOneName} for mailing address : ${mailingAddress}`)
-
+        if (await isProcessingCancelled(documentId)) {
+            console.log('Document processing cancelled');
+            return
+        }
         const { finalUpdates: finalUpdatesByName, caseTwoMatchFound: caseNameMatchFound } = await crawlByName(ownerOneName, address, mailingAddress, mailingCity, mailingState)
         if (caseNameMatchFound) {
             return finalUpdatesByName
@@ -211,7 +275,10 @@ const crawlData = async (rowData) => {
 
         // Second condition did not satisfy, Lets check for third, Search by column property address   
         console.info(`\n \n ------------ Searching for Property address:  ${address} for user 1: ${ownerOneName}, user 2: ${ownerTwoName}`)
-
+        if (await isProcessingCancelled(documentId)) {
+            console.log('Document processing cancelled');
+            return
+        }
         const { finalUpdates: propertyaddress, caseOneMatchFound: propertyaddressMatchFound } = await crawlByAddress(address, city, state, ownerDetails)
         if (propertyaddressMatchFound) {
             return propertyaddress
@@ -221,15 +288,32 @@ const crawlData = async (rowData) => {
         // Check if we have owner two data available if yes search by owner two name
         if (ownerTwoName.trim().length) {
             console.info(`\n \n ------------ Searching by owner two name:  ${ownerTwoName} for mailing address: ${mailingAddress}, property address: ${address}`)
-
+            if (await isProcessingCancelled(documentId)) {
+                console.log('Document processing cancelled');
+                return
+            }
             const { finalUpdates: finalUpdatesByName, caseTwoMatchFound: caseNameMatchFound } = await crawlByName(ownerTwoName, address, mailingAddress, mailingCity, mailingState)
             if (caseNameMatchFound) {
+                if (await isProcessingCancelled(documentId)) {
+                    console.log('Document processing cancelled');
+                    return
+                }
                 const OwnerInsideRelativesAndPartnersListURL = isOwnerInsideRelativesAndPartners(finalUpdatesByName, ownerDetails)
                 if (OwnerInsideRelativesAndPartnersListURL) {
-
+                    if (await isProcessingCancelled(documentId)) {
+                        console.log('Document processing cancelled');
+                        return
+                    }
                     const { phoneNumbers, relatives, relativeNames } = await this.extractDetailsByUrl(profileURL)
+                    if (await isProcessingCancelled(documentId)) {
+                        console.log('Document processing cancelled');
+                        return
+                    }
                     const relativeUpdates = await webCrawler.crawlRelativesPhoneNumbers(relatives, relativeNames)
-
+                    if (await isProcessingCancelled(documentId)) {
+                        console.log('Document processing cancelled');
+                        return
+                    }
                     let phoneUpdates = null
                     if (phoneNumbers.length) {
                         phoneUpdates = generateUpdatesObject(phoneNumbers, 'ownerMobile')

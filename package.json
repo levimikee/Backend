@@ -8,7 +8,9 @@
     "start": "node ./server.js",
     "dev": "nodemon ./server.js --ignore public/",
     "production": "NODE_ENV=production",
-    "setup": "node ./setup/setup.js"
+    "setup": "node ./setup/setup.js",
+    "create-root-user": "node ./setup/createRootUser.js",
+    "handle-processing-documents": "node ./setup/processing.js"
   },
   "dependencies": {
     "axios": "^1.6.2",

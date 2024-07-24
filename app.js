@@ -72,7 +72,7 @@ app.use("/api", authApiRouter);
 app.use("/api", apiRouter);
 
 //uncomment line below // app.use("/api", isValidToken, apiRouter);
-// app.use("/api", isValidToken, apiRouter);
+//app.use("/api", isValidToken, apiRouter);
 
 // If that above routes didnt work, we 404 them and forward to error handler
 app.use(errorHandlers.notFound);
