@@ -12,64 +12,56 @@ const webCrawler = new Crawler()
 
 const fileApi = {
     uploadFile: async (req, res) => {
-        // Check if a file is included in the request
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'No file uploaded.' });
-        }
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded.' });
+    }
 
-        // Access the file buffer
-        const fileBuffer = req.file.buffer;
+    const fileBuffer = req.file.buffer;
+    const fileContent = fileBuffer.toString('utf-8');
 
-        // Convert buffer to string (assuming it's a text-based CSV)
-        const fileContent = fileBuffer.toString('utf-8');
+    // Parse CSV en filas
+    const rows = [];
+    fileContent.trim().split('\n').forEach((row, index) => {
+        const columns = row.split(',');
+        const extractedData = {
+            index: index,
+            address: columns[0],
+            city: columns[2],
+            state: columns[3],
+            zip: columns[4],
+            ownerOneFirstName: columns[8],
+            ownerOneLastName: columns[9],
+            ownerTwoFirstName: columns[10],
+            ownerTwoLastName: columns[11],
+            mailingAddress: columns[13],
+            mailingCity: columns[15],
+            mailingState: columns[16]
+        };
+        rows.push(extractedData);
+    });
 
-        // Parse CSV
-        const rows = [];
-        fileContent
-            .trim() // Remove leading/trailing whitespaces
-            .split('\n') // Split into rows
-            .forEach((row, index) => {
+    // Guardar documento vacío con estado inicial
+    const result = await saveToDB(fileContent, res);
+    const documentId = result?._id;
 
-                // Split each row into columns
-                const columns = row.split(',');
+    // Procesar sincrónicamente
+    const updatedContent = await crawlAndSave(rows, fileContent, documentId);
 
-                // Extract specific columns (3, 4, 5, 9, 10)
-                const extractedData = {
-                    index: index,
-                    address: columns[0],
-                    city: columns[2],
-                    state: columns[3],
-                    zip: columns[4],
-                    ownerOneFirstName: columns[8],
-                    ownerOneLastName: columns[9],
-                    ownerTwoFirstName: columns[10],
-                    ownerTwoLastName: columns[11],
-                    mailingAddress: columns[13],
-                    mailingCity: columns[15],
-                    mailingState: columns[16]
-                };
+    if (updatedContent && documentId) {
+        await updateDB(documentId, updatedContent);
+        await webCrawler.resetRequestCount();
 
-                rows.push(extractedData);
-            });
+        const finalDoc = await ProcessCSV.findById(documentId);
 
+        return res.status(200).json({
+            success: true,
+            result: finalDoc,
+            message: "Archivo procesado correctamente",
+        });
+    }
 
-        let documentId = null
-        const result = await saveToDB(fileContent, res)
-        if (result) {
-            documentId = result?._id
-            res.status(200).json({
-                success: true,
-                result,
-                message: "Successfully Created the document in Model ",
-            });
-        }
-
-        const updatedContent = await crawlAndSave(rows, fileContent, documentId)
-        if (updatedContent && documentId) {
-            await updateDB(documentId, updatedContent)
-            await webCrawler.resetRequestCount()
-        }
-    },
+    return res.status(500).json({ success: false, message: "No se pudo procesar el archivo." });
+},
     cancelProcessing: async (req, res) => {
         try {
             const document = await ProcessCSV.findById(req.params.id);
