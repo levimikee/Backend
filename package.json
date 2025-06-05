@@ -2,7 +2,7 @@
   "name": "scraping-penguin-dashboard-backend",
   "version": "1.0.0",
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "start": "node ./server.js",
@@ -28,11 +28,13 @@
     "glob": "7.1.1",
     "jsonwebtoken": "^9.0.2",
     "modern-async": "^1.1.4",
+    "mongodb": "^4.17.2",
     "mongoose": "^5.9.10",
     "mongoose-autopopulate": "^0.14.0",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.24.1",
-    "papaparse": "^5.4.1"
+    "papaparse": "^5.4.1",
+    "web-streams-polyfill": "^4.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

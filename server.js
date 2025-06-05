@@ -25,13 +25,23 @@ mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
 mongoose.connection.on("error", (err) => {
   console.error(`🚫 Error → : ${err.message}`);
 });
-
-const glob = require("glob");
+const fs = require("fs");
 const path = require("path");
+
+const modelsPath = path.join(__dirname, "models");
+
+fs.readdirSync(modelsPath).forEach((file) => {
+  if (file.endsWith(".js")) {
+    require(path.join(modelsPath, file));
+  }
+});
+const glob = require("glob");
+
 
 glob.sync("./models/*.js").forEach(function (file) {
   require(path.resolve(file));
 });
+
 
 // Start our app!
 const app = require("./app");
@@ -39,3 +49,5 @@ app.set("port", process.env.PORT || 80);
 const server = app.listen(app.get("port"), () => {
   console.log(`Express running → On PORT : ${server.address().port}`);
 });
+
+

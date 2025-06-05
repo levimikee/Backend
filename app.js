@@ -36,6 +36,8 @@ app.use(
   })
 );
 
+
+
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
   res.locals.admin = req.admin || null;
@@ -82,6 +84,7 @@ if (app.get("env") === "development") {
   /* Development Error Handler - Prints stack trace */
   app.use(errorHandlers.developmentErrors);
 }
+ 
 
 // production error handler
 app.use(errorHandlers.productionErrors);
