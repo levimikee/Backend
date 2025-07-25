@@ -128,6 +128,7 @@ class Crawler {
         params: {
           api_key: process.env.APIKEY,
           url: url,
+          premium_proxy: true,
           render_js: true,
           wait: 5000
         },
