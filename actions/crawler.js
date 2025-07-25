@@ -28,7 +28,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://app.scrapingbee.com/api/v1'
+      baseURL: 'https://api.scraperapi.com'
     });
 
     // Instancia para BizFile (California SOS)
@@ -128,9 +128,7 @@ class Crawler {
         params: {
           api_key: process.env.APIKEY,
           url: url,
-          premium_proxy: true,
           render_js: true,
-          wait: 5000
         },
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
