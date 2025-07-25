@@ -6,8 +6,8 @@ const { generateUpdatesObject, formatString, formatUrl, formatEmail } = require(
 const { columnMappings, maximumParallelLoops, maximumRelativesToCrawl } = require('../config');
 const { mapLimit, sleep } = require('modern-async');
 const OpenAI = require('openai');
-const { notifySlack } = require('./slack');
 const pLimit = require('p-limit');
+const { notifySlack } = require('./slack');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 
