@@ -7,6 +7,7 @@ const { columnMappings, maximumParallelLoops, maximumRelativesToCrawl } = requir
 const { mapLimit, sleep } = require('modern-async');
 const OpenAI = require('openai');
 const { notifySlack } = require('./slack');
+const pLimit = require('p-limit');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 
@@ -42,7 +43,8 @@ class Crawler {
       }
     });
 
-    this.requestCount = 0;
+ this.requestCount = 0;
+    this.limit = pLimit(5); // límite máximo de requests en simultáneo
   }
 
   /**
