@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://api.zenrows.com/v1/'
+      baseURL: 'https://api.scraperapi.com/'
     });
 
     // Instancia para BizFile (California SOS)
@@ -126,7 +126,7 @@ class Crawler {
   async getHtmlContent(url) {
     let result = "";
     try {
-      const response = await this.axiosInstance.get("", {
+      const response = await this.limit(() => this.axiosInstance.get("", {
         params: {
           apikey: process.env.APIKEY,
           url: url,
@@ -137,7 +137,7 @@ class Crawler {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
         }
-      });
+      }));
       this.requestCount++;
       result = response.data;
       notifySlack(`✅ Scraping exitoso: ${url}`);
