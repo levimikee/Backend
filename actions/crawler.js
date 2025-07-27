@@ -128,7 +128,7 @@ class Crawler {
     try {
       const response = await this.limit(() => this.axiosInstance.get("", {
         params: {
-          "api-key": process.env.APIKEY,
+          "x-api-key": process.env.APIKEY,
           url: url,
           js_render: true,
           premium_proxy: true,
