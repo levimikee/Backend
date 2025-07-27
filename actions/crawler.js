@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://api.scraperapi.com/'
+      baseURL: 'https://app.zenscrape.com/api/v1/get'
     });
 
     // Instancia para BizFile (California SOS)
@@ -44,7 +44,7 @@ class Crawler {
     });
 
  this.requestCount = 0;
-    this.limit = pLimit(5); // límite máximo de requests en simultáneo
+    this.limit = pLimit(1); // límite máximo de requests en simultáneo
   }
 
   /**
@@ -128,7 +128,7 @@ class Crawler {
     try {
       const response = await this.limit(() => this.axiosInstance.get("", {
         params: {
-          api_key: process.env.APIKEY,
+          apikey: process.env.APIKEY,
           url: url,
           js_render: true,
           premium_proxy: true,
