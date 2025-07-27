@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://app.zenscrape.com/api/v1/get'
+      baseURL: 'https://api.scrapingant.com/v2/general'
     });
 
     // Instancia para BizFile (California SOS)
@@ -128,7 +128,7 @@ class Crawler {
     try {
       const response = await this.limit(() => this.axiosInstance.get("", {
         params: {
-          apikey: process.env.APIKEY,
+          "api-key": process.env.APIKEY,
           url: url,
           js_render: true,
           premium_proxy: true,
