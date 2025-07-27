@@ -44,7 +44,7 @@ class Crawler {
     });
 
  this.requestCount = 0;
-    this.limit = pLimit(1); // límite máximo de requests en simultáneo
+    this.limit = pLimit(5); // límite máximo de requests en simultáneo
   }
 
   /**
