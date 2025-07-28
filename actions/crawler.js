@@ -129,28 +129,16 @@ class Crawler {
 
     try {
       const response = await this.limit(() => this.axiosInstance.post("", {
-        // params: {
-        //   "key": process.env.APIKEY,
-        //   url: url,
-        //   js_render: true,
-        //   premium_proxy: true,
-        //   render_js: true,
-        //   asp: true
-         
-
-        // },
-        headers: {
+      source: 'universal',
+      render: 'html',
+      url: url
+    }, {
+      headers: {
         'Content-Type': 'application/json',
-
-          // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          Authorization: authHeader
-        },
-        data: {
-          "source": "universal",
-          "render": "html",
-          "url": url,
-        }
-      }));
+        Authorization: authHeader
+      }
+    })
+  );
       this.requestCount++;
       result = response.data;
       notifySlack(`✅ Scraping exitoso: ${url}`);
