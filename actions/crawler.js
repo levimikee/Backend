@@ -128,7 +128,7 @@ class Crawler {
       const authHeader = 'Basic ' + Buffer.from('Pepe123_9eW69:Pepe12345678_').toString('base64');
 
     try {
-      const response = await this.limit(() => this.axiosInstance.get("", {
+      const response = await this.limit(() => this.axiosInstance.post("", {
         // params: {
         //   "key": process.env.APIKEY,
         //   url: url,
