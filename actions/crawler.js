@@ -132,8 +132,7 @@ class Crawler {
           url: url,
           js_render: true,
           premium_proxy: true,
-          proxy_type:"residential",
-          proxy_country: "US"
+         
 
         },
         headers: {
