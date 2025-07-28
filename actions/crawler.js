@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://api.scrapingant.com/v2/general'
+      baseURL: 'https://api.scrapingant.com/v2/extended'
     });
 
     // Instancia para BizFile (California SOS)
@@ -132,6 +132,8 @@ class Crawler {
           url: url,
           js_render: true,
           premium_proxy: true,
+          proxy_type:"residential",
+          proxy_country: "US"
 
         },
         headers: {
