@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://api.scrapfly.io/scrape'
+      baseURL: 'https://realtime.oxylabs.io/v1/queries'
     });
 
     // Instancia para BizFile (California SOS)
@@ -125,20 +125,28 @@ class Crawler {
    */
   async getHtmlContent(url) {
     let result = "";
+      const authHeader = 'Basic ' + Buffer.from('Pepe123_9eW69:Pepe12345678_').toString('base64');
+
     try {
       const response = await this.limit(() => this.axiosInstance.get("", {
-        params: {
-          "key": process.env.APIKEY,
-          url: url,
-          js_render: true,
-          premium_proxy: true,
-          render_js: true,
-          asp: true
+        // params: {
+        //   "key": process.env.APIKEY,
+        //   url: url,
+        //   js_render: true,
+        //   premium_proxy: true,
+        //   render_js: true,
+        //   asp: true
          
 
-        },
+        // },
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          Authorization: authHeader
+        },
+        body: {
+          "source": "universal",
+          "render": "html",
+          "url": url,
         }
       }));
       this.requestCount++;
