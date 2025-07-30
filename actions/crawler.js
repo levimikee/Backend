@@ -29,7 +29,7 @@ class Crawler {
   constructor() {
     // Instancia para scrapingBee
     this.axiosInstance = axios.create({
-      baseURL: 'https://realtime.oxylabs.io/v1/queries'
+      baseURL: 'https://api.scrapingant.com/v2/extended'
     });
 
     // Instancia para BizFile (California SOS)
@@ -125,22 +125,21 @@ class Crawler {
    */
   async getHtmlContent(url) {
     let result = "";
-      const authHeader = 'Basic ' + Buffer.from('Pepe123_9eW69:Pepe12345678_').toString('base64');
-
     try {
-      const response = await this.limit(() => this.axiosInstance.post("", {
-      source: 'universal',
-      render: 'html',
-      url: url
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authHeader
-      }
-    })
-  );
+      const response = await this.limit(() => this.axiosInstance.get("", {
+        params: {
+          "x-api-key": process.env.APIKEY,
+          url: url,
+          
+         
+
+        },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        }
+      }));
       this.requestCount++;
-      result = response.data.results[0].content;
+      result = response.data;
       notifySlack(`✅ Scraping exitoso: ${url}`);
       // Espera aleatoria entre 4 y 7 segundos antes de la siguiente request
       await sleep(Math.floor(Math.random() * 3000) + 4000);
