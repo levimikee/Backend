@@ -139,7 +139,7 @@ class Crawler {
         }
       }));
       this.requestCount++;
-      result = response.data;
+      result = response.data.html;
       notifySlack(`✅ Scraping exitoso: ${url}`);
       // Espera aleatoria entre 4 y 7 segundos antes de la siguiente request
       await sleep(Math.floor(Math.random() * 3000) + 4000);
